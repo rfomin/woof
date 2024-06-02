@@ -1,13 +1,13 @@
 name: Continuous Integration
 
 on:
-  push:
-    branches: [ master ]
-    tags: ['*']
-    paths-ignore: ['**.md']
-  pull_request:
-    branches: [ master ]
-    paths-ignore: ['**.md']
+  # push:
+  #   branches: [ master ]
+  #   tags: ['*']
+  #   paths-ignore: ['**.md']
+  # pull_request:
+  #   branches: [ master ]
+  #   paths-ignore: ['**.md']
   workflow_dispatch:
 
 jobs:
