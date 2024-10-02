@@ -76,7 +76,6 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Configure
-        shell: bash
         run: >-
           cmake -B build -G Ninja
           -DCMAKE_BUILD_TYPE=Release
