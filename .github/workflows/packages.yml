@@ -24,8 +24,7 @@ jobs:
         config:
           - name: Linux GCC
             os: ubuntu-22.04
-            toolchain: |
-              $VCPKG_INSTALLATION_ROOT
+            toolchain: $VCPKG_INSTALLATION_ROOT
             triplet: x64-linux-dynamic-release
             artifact-name: AppImage
             artifact-path: build/*.appimage
@@ -34,8 +33,7 @@ jobs:
           - name: MSVC x64
             os: windows-latest
             arch: x64
-            toolchain: |
-              ${env:VCPKG_INSTALLATION_ROOT}
+            toolchain: ${env:VCPKG_INSTALLATION_ROOT}
             triplet: x64-windows-static-release
             artifact-name: Win-64
             artifact-path: build/*.zip
@@ -47,8 +45,7 @@ jobs:
           - name: MSVC x86
             os: windows-latest
             arch: x86
-            toolchain: |
-              ${env:VCPKG_INSTALLATION_ROOT}
+            toolchain: ${env:VCPKG_INSTALLATION_ROOT}
             triplet: x86-windows-static-release
             artifact-name: Win-32
             artifact-path: build/*.zip
