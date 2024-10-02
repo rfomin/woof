@@ -74,13 +74,6 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-      - name: Update vcpkg
-        shell: bash
-        run: |
-          cd "$VCPKG_INSTALLATION_ROOT"
-          git stash
-          git pull
-
       - name: Configure
         shell: bash
         run: >-
