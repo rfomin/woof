@@ -32,16 +32,24 @@
 
 #elif defined(__GNUC__) && defined(__x86_64__)
 
-  inline static int32_t div64_32(int64_t a, int32_t b)
+  inline static int32_t div64_32(int64_t dividend, int32_t divisor)
   {
-      if (__builtin_constant_p(b))
+      if (__builtin_constant_p(divisor))
       {
-          return a / b;
+          return dividend / divisor;
       }
-      int32_t lo = a;
-      int32_t hi = a >> 32;
-      asm("idivl %[divisor]" : "+a" (lo), "+d" (hi) : [divisor] "r" (b));
-      return lo;
+
+      int32_t result;
+      asm(
+        "mov %%rax, %%rdx\n"   // Copy dividend to RDX
+        "shr $32, %%rdx\n"     // High 32 bits of dividend into EDX
+        "idivl %[divisor]\n"   // Divide EDX:EAX (64-bit) by divisor (32-bit)
+        : "=a" (result)        // Quotient in EAX (32-bit)
+        : "a" (dividend),      // Dividend loaded into RAX
+          [divisor] "r" (divisor) // Divisor in a 64-bit register (lower 32 bits used)
+        : "rdx"                // Clobber RDX
+      );
+      return result;
   }
 
 #else
@@ -85,7 +93,7 @@ inline static int64_t FixedMul64(int64_t a, int64_t b)
 inline static fixed_t FixedDiv(fixed_t a, fixed_t b)
 {
     // [FG] avoid 31-bit shift (from Chocolate Doom)
-    if (((unsigned)abs(a) >> 14) >= (unsigned)abs(b))
+    if ((abs(a) >> 14) >= abs(b))
     {
         return (a ^ b) < 0 ? INT_MIN : INT_MAX;
     }
