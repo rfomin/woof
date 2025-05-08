@@ -105,6 +105,7 @@ jobs:
         # Save the cache even if build steps fail.
         if: always()
         with:
+          path: ${{ github.workspace }}/vcpkg_cache
           key: ${{ env.CACHE_KEY }}
 
       - name: Test
