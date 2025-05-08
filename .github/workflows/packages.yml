@@ -97,7 +97,6 @@ jobs:
       - name: Delete old cache
         env:
           GH_TOKEN: ${{ github.token }}
-        if: steps.cache.outputs.cache-hit
         run: gh cache delete --repo ${{ github.repository }} ${{ env.CACHE_KEY }}
 
       - name: Save cache
