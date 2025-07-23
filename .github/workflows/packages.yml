@@ -160,15 +160,9 @@ jobs:
       - name: lipo
         if: ${{ matrix.config.name == 'macOS uni' }}
         run: |
-          ls
-          cd build-x64
-          ls
-          cd src
-          ls
-          cd ../..
-          lipo -create -output woof "build/src/woof" "build-x64/scr/woof"
-          rm "build/src/woof"
-          mv woof "build/src"
+          lipo -create build/src/woof build-x64/src/woof -output woof
+          rm build/src/woof
+          mv woof build/src
           
       - name: Package (macOS)
         if: ${{ matrix.config.name == 'macOS uni' }}
