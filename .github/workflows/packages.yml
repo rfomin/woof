@@ -58,7 +58,7 @@ jobs:
             triplet-x64: x64-osx
             triplet: arm64-osx
             artifact-name: Mac-uni
-            artifact-path: build-uni/*.zip
+            artifact-path: build/*.zip
             extra-options: >-
               -DCMAKE_INSTALL_PREFIX=/usr
 
@@ -160,13 +160,18 @@ jobs:
         run: |
           cd build
           cpack
+
+      - name: lipo
+        if: ${{ matrix.config.name == 'macOS uni' }}
+        run: |
+          lipo -create -output woof "build/src/woof" "build-x64/scr/woof"
+          rm "build/src/woof"
+          mv woof "build/src"
           
       - name: Package (macOS)
         if: ${{ matrix.config.name == 'macOS uni' }}
         run: |
-          pip install lipomerge
-          python -m lipomerge build build-x64 build-uni
-          cd build-uni
+          cd build
           cpack
 
       - name: Upload Artifacts
