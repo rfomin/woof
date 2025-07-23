@@ -108,6 +108,7 @@ jobs:
         run: >-
           cmake -B build-x64 -G Ninja
           -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_OSX_ARCHITECTURES=x86_64
           -DENABLE_WERROR=ON -DENABLE_HARDENING=ON -DENABLE_LTO=ON
           -DWITH_FLUIDSYNTH=ON
           -DCMAKE_TOOLCHAIN_FILE="${{ matrix.config.toolchain }}/scripts/buildsystems/vcpkg.cmake"
