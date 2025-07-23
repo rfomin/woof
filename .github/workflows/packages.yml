@@ -116,13 +116,6 @@ jobs:
           -DVCPKG_TARGET_TRIPLET=${{ matrix.config.triplet-x64 }}
           ${{ matrix.config.extra-options }}
 
-      - name: Build
-        run: cmake --build build --config "Release"
-
-      - name: Build macOS x64
-        if: ${{ matrix.config.name == 'macOS uni' }}
-        run: cmake --build build-x64 --config "Release"
-
       # Delete the old cache on hit to emulate a cache update.
       - name: Delete old cache
         continue-on-error: true
@@ -137,9 +130,12 @@ jobs:
           path: ${{ github.workspace }}/vcpkg_cache
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      - name: Build
+        run: cmake --build build --config "Release"
+
+      - name: Build macOS x64
+        if: ${{ matrix.config.name == 'macOS uni' }}
+        run: cmake --build build-x64 --config "Release"
 
       - name: Test
         if: github.event_name == 'workflow_dispatch'
@@ -164,6 +160,12 @@ jobs:
       - name: lipo
         if: ${{ matrix.config.name == 'macOS uni' }}
         run: |
+          ls
+          cd build-x64
+          ls
+          cd src
+          ls
+          cd ../..
           lipo -create -output woof "build/src/woof" "build-x64/scr/woof"
           rm "build/src/woof"
           mv woof "build/src"
