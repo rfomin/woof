@@ -157,16 +157,15 @@ jobs:
           cd build
           cpack
 
-      - name: lipo
-        if: ${{ matrix.config.name == 'macOS uni' }}
-        run: |
-          lipo -create build/src/woof build-x64/src/woof -output woof
-          rm build/src/woof
-          mv woof build/src
-          
       - name: Package (macOS)
         if: ${{ matrix.config.name == 'macOS uni' }}
         run: |
+          lipo -create build/src/woof build-x64/src/woof -output woof
+          lipo -create build/src/woof-setup build-x64/src/woof-setup -output woof-setup
+          rm build/src/woof
+          rm build/src/woof-setup
+          mv woof build/src
+          mv woof-setup build/src
           cd build
           cpack
 
