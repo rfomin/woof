@@ -1,0 +1,18 @@
+set(VCPKG_TARGET_ARCHITECTURE x86)
+set(VCPKG_CRT_LINKAGE dynamic)
+set(VCPKG_LIBRARY_LINKAGE static)
+set(VCPKG_ENV_PASSTHROUGH PATH)
+
+set(VCPKG_CMAKE_SYSTEM_NAME MinGW)
+
+set(VCPKG_BUILD_TYPE release) 
+
+# Prepend 32-bit toolchain to PATH
+if(DEFINED ENV{PATH})
+    set(ENV{PATH} "C:/w64devkit/vcpkg_fix/bin;C:/w64devkit/w64devkit/bin;$ENV{PATH}")
+else()
+    set(ENV{PATH} "C:/w64devkit/vcpkg_fix/bin;C:/w64devkit/w64devkit/bin")
+endif()
+
+set(VCPKG_CONFIGURE_MAKE_OPTIONS_RELEASE "--disable-dependency-tracking")
+

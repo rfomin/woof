@@ -8,9 +8,6 @@ endif()
 # X_VCPKG_APPLOCAL_DEPS_INSTALL automatically installs dependencies.
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
 
-# Adds the cmake directory to the CMake include path.
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
 project(
     "Woof"
     VERSION 15.2.0
@@ -100,6 +97,9 @@ check_c_source_compiles(
 option(CMAKE_FIND_PACKAGE_PREFER_CONFIG
        "Lookup package config files before using find modules" ON)
 
+# Adds the cmake directory to the CMake include path.
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 set(CMAKE_FIND_FRAMEWORK NEVER)
 
 # Library requirements.
@@ -115,7 +115,7 @@ if(ALSA_FOUND)
     set(HAVE_ALSA TRUE)
 endif()
 
-if(OPENAL_VERSION_STRING VERSION_GREATER_EQUAL "1.22.0")
+if(OpenAL_VERSION_STRING VERSION_GREATER_EQUAL "1.22.0")
     set(HAVE_AL_BUFFER_CALLBACK TRUE)
 endif()
 
@@ -124,9 +124,14 @@ if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
 endif()
 
 find_package(yyjson)
-find_package(FluidSynth)
 find_package(libxmp)
 
+if(VCPKG_TOOLCHAIN)
+    find_package(FluidSynth MODULE)
+else()
+    find_package(FluidSynth)
+endif()
+    
 if(FluidSynth_FOUND)
     set(HAVE_FLUIDSYNTH TRUE)
 endif()

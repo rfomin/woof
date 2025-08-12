@@ -22,15 +22,8 @@
 #if defined(_WIN32) || defined(_WIN64)
   #define __USE_W32_SOCKETS
   #define _WINSOCK_DEPRECATED_NO_WARNINGS
-  #ifdef _WIN64
-    #include <winsock2.h>
-    #include <ws2tcpip.h>
-  #else
-    #include <winsock.h>
-    /* NOTE: windows socklen_t is signed
-     * and is defined only for winsock2. */
-    typedef int socklen_t;
-  #endif /* W64 */
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
   #include <iphlpapi.h>
 #else /* UNIX */
   #include <sys/types.h>

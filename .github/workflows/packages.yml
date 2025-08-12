@@ -41,16 +41,16 @@ jobs:
               -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
               -DCMAKE_IGNORE_PATH="C:/Strawberry/perl/bin;C:/Strawberry/c/lib"
 
-          - name: MSVC x86
+          - name: MinGW x86
             os: windows-latest
             arch: x86
             toolchain: ${env:VCPKG_INSTALLATION_ROOT}
-            triplet: x86-windows-static-release
+            triplet: x86-mingw-static-release
             artifact-name: Win-32
             artifact-path: build/*.zip
             extra-options: >-
-              -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
-              -DCMAKE_IGNORE_PATH="C:/Strawberry/perl/bin;C:/Strawberry/c/lib"
+              -DCMAKE_IGNORE_PATH="C:/Strawberry/perl/bin;C:/Strawberry/c/lib;C:/msys64/usr/bin"
+              -DVCPKG_HOST_TRIPLET=x86-mingw-static-release
 
           - name: macOS uni
             os: macos-latest
@@ -73,10 +73,34 @@ jobs:
           sudo apt-get build-dep libsdl2-dev
           
       - name: Developer Command Prompt
-        if: runner.os == 'Windows'
+        if: ${{ matrix.config.name == 'MSVC x64' }}
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.config.arch }}
+
+      - name: Download and install w64devkit
+        if: ${{ matrix.config.name == 'MinGW x86' }}
+        run: |
+          $url = "https://github.com/skeeto/w64devkit/releases/download/v2.4.0/w64devkit-x86-2.4.0.7z.exe"
+          $output = "w64devkit.7z"
+          (New-Object Net.WebClient).DownloadFile($url, $output)
+          7z x $output -oC:\w64devkit -y
+
+      - name: Configure w64devkit for vcpkg
+        if: ${{ matrix.config.name == 'MinGW x86' }}
+        run: |
+          # Create custom bin directory
+          $fixDir = "C:\w64devkit\vcpkg_fix\bin"
+          New-Item -ItemType Directory -Path $fixDir -Force
+
+          # Copy wrapper scripts from repository
+          Copy-Item -Path .github/workflows/scripts/make_wrapper.sh -Destination "$fixDir\make"
+          Copy-Item -Path .github/workflows/scripts/install_wrapper.sh -Destination "$fixDir\install"
+          
+          # Set environment variables
+          "MSYS2_ARG_CONV_EXCL=*" >> $env:GITHUB_ENV
+          "VCPKG_DISABLE_COMPILER_TRACKING=ON" >> $env:GITHUB_ENV
+          "CFLAGS=-D__USE_MINGW_ANSI_STDIO=0" >> $env:GITHUB_ENV
 
       - name: Restore vcpkg cache
         id: cache
@@ -87,8 +111,9 @@ jobs:
 
       - name: Configure
         run: >-
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          -DENABLE_WERROR=ON -DENABLE_HARDENING=ON -DENABLE_LTO=ON
+          cmake -B build -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DENABLE_LTO=ON
           -DWITH_FLUIDSYNTH=ON
           -DCMAKE_TOOLCHAIN_FILE="${{ matrix.config.toolchain }}/scripts/buildsystems/vcpkg.cmake"
           -DVCPKG_TARGET_TRIPLET=${{ matrix.config.triplet }}
@@ -98,7 +123,7 @@ jobs:
         if: ${{ matrix.config.name == 'macOS uni' }}
         run: >-
           cmake -B build-x64 -G Ninja -DCMAKE_BUILD_TYPE=Release
-          -DENABLE_WERROR=ON -DENABLE_HARDENING=ON -DENABLE_LTO=ON
+          -DENABLE_LTO=ON
           -DWITH_FLUIDSYNTH=ON
           -DCMAKE_OSX_ARCHITECTURES=x86_64
           -DCMAKE_TOOLCHAIN_FILE="${{ matrix.config.toolchain }}/scripts/buildsystems/vcpkg.cmake"

@@ -45,10 +45,7 @@
       "dependencies": [
         {
           "name": "fluidsynth",
-          "default-features": false,
-          "features": [
-            "sndfile"
-          ]
+          "default-features": false
         }
       ]
     }

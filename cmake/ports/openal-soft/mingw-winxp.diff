@@ -1,0 +1,52 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 060a7408..aaf1316d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -603,6 +603,11 @@ if(NOT WIN32)
+     endif()
+ endif()
+ 
++option(ALSOFT_MINGW_WINXP "Windows XP build" OFF)
++if(ALSOFT_MINGW_WINXP)
++    set(MINGW_WINXP TRUE)
++endif()
++
+ 
+ # Common sources used by both the OpenAL implementation library, the OpenAL
+ # router, and certain tools and examples.
+diff --git a/alc/alconfig.cpp b/alc/alconfig.cpp
+index e0a3920c..2fbfb048 100644
+--- a/alc/alconfig.cpp
++++ b/alc/alconfig.cpp
+@@ -334,7 +334,7 @@ void ReadALConfig()
+ {
+     fs::path path;
+ 
+-#if !defined(_GAMING_XBOX)
++#if !defined(_GAMING_XBOX) && !defined(MINGW_WINXP)
+     {
+ #if !ALSOFT_UWP
+         std::unique_ptr<WCHAR,CoTaskMemDeleter> bufstore;
+diff --git a/config.h.in b/config.h.in
+index fb61fcf2..93cc1649 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -48,3 +48,5 @@
+ 
+ /* Define to 1 if building with legacy EAX API support, else 0 */
+ #cmakedefine01 ALSOFT_EAX
++
++#cmakedefine MINGW_WINXP
+diff --git a/core/helpers.cpp b/core/helpers.cpp
+index 96fca106..b8dee4c9 100644
+--- a/core/helpers.cpp
++++ b/core/helpers.cpp
+@@ -172,7 +172,7 @@ auto SearchDataFiles(const std::string_view ext, const std::string_view subdir)
+         return results;
+     }
+ 
+-#if !ALSOFT_UWP && !defined(_GAMING_XBOX)
++#if !ALSOFT_UWP && !defined(_GAMING_XBOX) && !defined(MINGW_WINXP)
+     /* Search the local and global data dirs. */
+     for(const auto &folderid : std::array{FOLDERID_RoamingAppData, FOLDERID_ProgramData})
+     {
