@@ -9,10 +9,14 @@ set(VCPKG_BUILD_TYPE release)
 
 # Prepend 32-bit toolchain to PATH
 if(DEFINED ENV{PATH})
-    set(ENV{PATH} "C:/w64devkit/vcpkg_fix/bin;C:/w64devkit/w64devkit/bin;$ENV{PATH}")
+    set(ENV{PATH} "C:/w64devkit/w64devkit/bin;$ENV{PATH}")
 else()
-    set(ENV{PATH} "C:/w64devkit/vcpkg_fix/bin;C:/w64devkit/w64devkit/bin")
+    set(ENV{PATH} "C:/w64devkit/w64devkit/bin")
 endif()
+
+set(VCPKG_TARGET_LIB_DIR "lib")
+
+set(VCPKG_POLICY_SKIP_ARCHITECTURE_CHECK enabled)
 
 set(VCPKG_CONFIGURE_MAKE_OPTIONS_RELEASE "--disable-dependency-tracking")
 

@@ -86,22 +86,6 @@ jobs:
           (New-Object Net.WebClient).DownloadFile($url, $output)
           7z x $output -oC:\w64devkit -y
 
-      - name: Configure w64devkit for vcpkg
-        if: ${{ matrix.config.name == 'MinGW x86' }}
-        run: |
-          # Create custom bin directory
-          $fixDir = "C:\w64devkit\vcpkg_fix\bin"
-          New-Item -ItemType Directory -Path $fixDir -Force
-
-          # Copy wrapper scripts from repository
-          Copy-Item -Path .github/workflows/scripts/make_wrapper.sh -Destination "$fixDir\make"
-          Copy-Item -Path .github/workflows/scripts/install_wrapper.sh -Destination "$fixDir\install"
-          
-          # Set environment variables
-          "MSYS2_ARG_CONV_EXCL=*" >> $env:GITHUB_ENV
-          "VCPKG_DISABLE_COMPILER_TRACKING=ON" >> $env:GITHUB_ENV
-          "CFLAGS=-D__USE_MINGW_ANSI_STDIO=0" >> $env:GITHUB_ENV
-
       - name: Restore vcpkg cache
         id: cache
         uses: actions/cache/restore@v4
