@@ -226,17 +226,37 @@ jobs:
         if: matrix.config.type == 'w64devkit'
         shell: pwsh
         run: |
-          $url = "https://github.com/skeeto/w64devkit/releases/download/v${{ matrix.config.kit-version }}/w64devkit-${{ matrix.config.kit-variant }}-${{ matrix.config.kit-version }}.7z.exe"
+          $version = "${{ matrix.config.kit-version }}"
+          $variant = "${{ matrix.config.kit-variant }}"
+          $url = "https://github.com/skeeto/w64devkit/releases/download/v$version/w64devkit-$variant-$version.7z.exe"
+          
+          # 1. Download the self-extracting archive
           Invoke-WebRequest -Uri $url -OutFile w64devkit.exe
-          .\w64devkit.exe -y
-          $kitDir = Get-ChildItem -Directory -Filter "w64devkit-${{ matrix.config.kit-variant }}-*" | Select-Object -First 1
-          if (-not $kitDir) { throw "w64devkit extraction directory not found" }
-          Write-Host "Using w64devkit at $($kitDir.FullName)"
-          # Make w64devkit's CMake/Ninja/GCC win over any pre-installed toolchain
-          "$kitDir\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          # vcpkg needs a MinGW host triplet since MSVC is not present
+          
+          # 2. Download 7zr.exe (standalone 7-Zip command line tool)
+          $7zrUrl = "https://www.7-zip.org/a/7zr.exe"
+          Invoke-WebRequest -Uri $7zrUrl -OutFile 7zr.exe
+          
+          # 3. Extract the archive into a clean 'w64devkit' folder
+          #    (7zr.exe can extract self-extracting .exe files directly)
+          .\7zr.exe x w64devkit.exe -o"w64devkit" -y
+          
+          # 4. Locate the 'bin' directory inside the extracted kit
+          $binDir = Join-Path (Resolve-Path "w64devkit") "bin"
+          if (-not (Test-Path $binDir)) {
+              # The archive might contain an extra nested 'w64devkit' folder;
+              # fall back to searching for the first 'bin' directory.
+              $binDir = (Get-ChildItem -Path "w64devkit" -Filter "bin" -Directory -Recurse | Select-Object -First 1).FullName
+          }
+          if (-not $binDir) { throw "Could not locate the 'bin' directory inside w64devkit." }
+          Write-Host "Using w64devkit bin at $binDir"
+          
+          # 5. Make w64devkit's tools available for all subsequent steps
+          $binDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          
+          # 6. Tell vcpkg to use a MinGW host triplet (no MSVC needed)
           "VCPKG_DEFAULT_HOST_TRIPLET=x86-mingw-static" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          # Force the minimum supported OS version to Windows XP (5.01)
+          # 7. Force the minimum supported OS version to Windows XP (5.01)
           "VCPKG_CMAKE_SYSTEM_VERSION=5.01" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Build SDL3 (Linux)
