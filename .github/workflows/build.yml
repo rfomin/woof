@@ -35,7 +35,6 @@ jobs:
             arch: x86_64
             extra-options: >-
               -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=OFF
-              -DCMAKE_INSTALL_PREFIX=/usr
 
           - name: macOS arm64
             os: macos-latest
@@ -62,7 +61,6 @@ jobs:
               -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
               -DVCPKG_TARGET_TRIPLET=arm64-osx-release
               -DWITH_DISCORD_RPC=ON
-              -DCMAKE_INSTALL_PREFIX=/usr
 
           - name: macOS x64 (vcpkg)
             os: macos-15-intel
@@ -91,6 +89,7 @@ jobs:
               -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
               -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic-release
               -DWITH_DISCORD_RPC=ON
+              -DCMAKE_INSTALL_PREFIX=/usr
 
           - name: MSVC x64 (vcpkg)
             os: windows-2022
