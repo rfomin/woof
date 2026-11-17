@@ -89,6 +89,7 @@ jobs:
               -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
               -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic-release
               -DWITH_DISCORD_RPC=ON
+              -DCMAKE_INSTALL_RPATH="$GITHUB_WORKSPACE/build/vcpkg_installed/x64-linux-dynamic-release/lib"
               -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON
 
           - name: MSVC x64 (vcpkg)
