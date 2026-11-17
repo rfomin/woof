@@ -38,6 +38,8 @@ option(CMAKE_COLOR_DIAGNOSTICS "Colored diagnostics" ON)
 # X_VCPKG_APPLOCAL_DEPS_INSTALL automatically installs dependencies.
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON)
 
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # Adds the cmake directory to the CMake include path.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
