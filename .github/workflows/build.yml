@@ -153,9 +153,7 @@ jobs:
       - name: Install linuxdeploy (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y patchelf libfuse2 desktop-file-utils
-
+          sudo apt-get install -y patchelf fuse desktop-file-utils
           sudo wget -q "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{ matrix.config.arch }}.AppImage" -O /usr/local/bin/linuxdeploy
           sudo wget -q "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-${{ matrix.config.arch }}.AppImage -O /usr/local/bin/linuxdeploy-plugin-appimage
           sudo chmod +x /usr/local/bin/linuxdeploy /usr/local/bin/linuxdeploy-plugin-appimage
